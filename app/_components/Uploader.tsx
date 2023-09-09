@@ -1,24 +1,22 @@
 'use client';
 
 import { ChangeEvent, useState } from 'react';
-import { read } from 'xlsx';
 import { InvoiceData } from '../_utils/types';
-import { getCustomerData, getMetadata } from '../_utils/dataTools';
 import { DebugTable } from './DebugTable';
+import { getUpdatedInvoiceData } from '../_utils/dataTools';
 
 export default function Uploader() {
   const [ invoiceData, setInvoiceData ] = useState<InvoiceData>();
 
-  async function handleFileAsync(event:ChangeEvent<HTMLInputElement>) {
+  async function handleFileAsync(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    const data = await file?.arrayBuffer();
-    const workbook = read(data);
-    console.log(workbook);
+    if (!file) { return; }
 
-    const customerData = getCustomerData(workbook);
-    const metadata = getMetadata(workbook);
-    const updatedInvoiceData = { customerData, metadata };
-    console.log({ updatedInvoiceData });
+    const filename = file.name;
+    const data = await file?.arrayBuffer();
+
+    const updatedInvoiceData = getUpdatedInvoiceData(data, filename);
+    console.log({ filename, updatedInvoiceData });
 
     setInvoiceData(updatedInvoiceData);
   }

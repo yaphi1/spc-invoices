@@ -1,9 +1,10 @@
-import { utils, WorkBook } from "xlsx";
+import { read, utils, WorkBook } from "xlsx";
 import {
   CellValue,
   CustomerData,
   FormattedCustomerData,
   Metadata,
+  RawFileData,
 } from "./types";
 
 function getColumnHeadings(customerData: CustomerData) {
@@ -65,7 +66,9 @@ export function getCustomerData(workbook: WorkBook): FormattedCustomerData {
 }
 
 export function getMetadata(workbook: WorkBook): Metadata {
-  // TODO: replace placeholders
+  const { month, year } = getInvoicePeriod(workbook);
+
+  // TODO: replace address placeholders
   const metadata = {
     address: {
       street: 'street',
@@ -74,9 +77,46 @@ export function getMetadata(workbook: WorkBook): Metadata {
       state: 'state',
       zip: 'zip',
     },
-    month: 'Example',
-    year: 2023,
+    month,
+    year,
   };
 
   return metadata;
+}
+
+function getInvoicePeriod(workbook: WorkBook) {
+  const title = workbook.Props?.Title ?? '';
+  const month = getMonthFromTitle(title);
+  const year = getYearFromTitle(title);
+
+  return { month, year };
+}
+
+function getMonthFromTitle(title: string) {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const month = monthNames.find(name => title.includes(name)) ?? '';
+  return month;
+}
+
+function getYearFromTitle(title: string) {
+  const year = Number((title.match(/\d\d\d\d/) ?? [''])[0]);
+  return year;
+}
+
+export function getUpdatedInvoiceData(data: RawFileData, filename: string) {
+  const workbook = formatWorkbook(data, filename);
+  const customerData = getCustomerData(workbook);
+  const metadata = getMetadata(workbook);
+  const updatedInvoiceData = { customerData, metadata };
+
+  return updatedInvoiceData;
+}
+
+function formatWorkbook(data: RawFileData, filename: string) {
+  const workbook = read(data);
+  workbook.Props = workbook.Props ?? {};
+  workbook.Props.Title = filename;
+  console.log(workbook);
+
+  return workbook;
 }

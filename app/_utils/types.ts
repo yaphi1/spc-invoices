@@ -27,3 +27,5 @@ export type InvoiceData = {
   customerData: FormattedCustomerData;
   metadata: Metadata
 };
+
+export type RawFileData = ArrayBuffer | undefined;
