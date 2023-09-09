@@ -1,6 +1,6 @@
 import { InvoiceData } from "../_utils/types";
 
-export function DebugTable({ invoiceData }: { invoiceData?: InvoiceData }) {
+export default function DebugTable({ invoiceData }: { invoiceData?: InvoiceData }) {
   return (
     <table>
       <tbody>

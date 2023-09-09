@@ -2,6 +2,7 @@ import { read, utils, WorkBook } from "xlsx";
 import {
   CellValue,
   CustomerData,
+  FormattedCellValue,
   FormattedCustomerData,
   Metadata,
   RawFileData,
@@ -119,4 +120,9 @@ function formatWorkbook(data: RawFileData, filename: string) {
   console.log(workbook);
 
   return workbook;
+}
+
+export function getCellValueByColumnHeading(row: FormattedCellValue[], columnHeading: CellValue) {
+  const cellData = row.find(cellData => cellData.columnHeading === columnHeading);
+  return cellData?.cellValue;
 }

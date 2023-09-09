@@ -2,8 +2,9 @@
 
 import { ChangeEvent, useState } from 'react';
 import { InvoiceData } from '../_utils/types';
-import { DebugTable } from './DebugTable';
 import { getUpdatedInvoiceData } from '../_utils/dataTools';
+import DebugTable from './DebugTable';
+import Invoices from './Invoices';
 
 export default function Uploader() {
   const [ invoiceData, setInvoiceData ] = useState<InvoiceData>();
@@ -31,6 +32,7 @@ export default function Uploader() {
         />
       </div>
       <DebugTable invoiceData={invoiceData} />
+      <Invoices invoiceData={invoiceData} />
     </div>
   );
 }
