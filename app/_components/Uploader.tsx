@@ -3,7 +3,6 @@
 import { ChangeEvent, useState } from 'react';
 import { InvoiceData } from '../_utils/types';
 import { getUpdatedInvoiceData } from '../_utils/dataTools';
-import DebugTable from './DebugTable';
 import Invoices from './Invoices';
 
 export default function Uploader() {
@@ -31,7 +30,6 @@ export default function Uploader() {
           onChange={(e) => { handleFileAsync(e); }}
         />
       </div>
-      <DebugTable invoiceData={invoiceData} />
       <Invoices invoiceData={invoiceData} />
     </div>
   );

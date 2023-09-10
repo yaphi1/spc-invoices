@@ -1,14 +1,5 @@
 export type CellValue = string | number;
 
-export type CustomerData = CellValue[][];
-
-export type FormattedCellValue = {
-  cellValue: CellValue;
-  columnHeading: CellValue;
-};
-
-export type FormattedCustomerData = FormattedCellValue[][];
-
 export type Address = {
   street: string;
   streetLine2?: string;
@@ -23,9 +14,13 @@ export type Metadata = {
   year: number;
 };
 
+export type RawFileData = ArrayBuffer | undefined;
+
+export type CustomerDataRow = Record<string, CellValue>;
+
+export type CustomerData = CustomerDataRow[];
+
 export type InvoiceData = {
-  customerData: FormattedCustomerData;
+  customerData: CustomerData;
   metadata: Metadata
 };
-
-export type RawFileData = ArrayBuffer | undefined;

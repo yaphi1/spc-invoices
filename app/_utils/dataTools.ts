@@ -1,72 +1,12 @@
 import { read, utils, WorkBook } from "xlsx";
 import {
-  CellValue,
   CustomerData,
-  FormattedCellValue,
-  FormattedCustomerData,
+  InvoiceData,
   Metadata,
   RawFileData,
 } from "./types";
 
-function getColumnHeadings(customerData: CustomerData) {
-  return customerData[0];
-}
-
-function getColumnIndexByName(name: string, customerData: CustomerData) {
-  const columnHeadings = getColumnHeadings(customerData);
-  const columnIndex = columnHeadings.findIndex(heading => heading === name);
-  return columnIndex;
-}
-
-function getCellValueByColumnName(name: string, row: CellValue[], customerData: CustomerData) {
-  const cellValue = row[getColumnIndexByName(name, customerData)];
-  return cellValue;
-}
-
-function isRowValid(row: CellValue[], customerData: CustomerData) {
-  const isRowPopulated = row.length > 0;
-
-  const customerName = getCellValueByColumnName('Full Name', row, customerData);
-  const totalOwed = getCellValueByColumnName('Total Owed', row, customerData);
-
-  const hasCustomerName = Boolean(customerName);
-  const hasTotalOwed = Boolean(totalOwed);
-
-  return isRowPopulated && hasCustomerName && hasTotalOwed;
-}
-
-function formatCellData(row: CellValue[], customerData: CustomerData) {
-  const columnHeadings = customerData[0];
-  const sparseRowFilledIn = [...row];
-
-  return sparseRowFilledIn.map((cellValue, i) => {
-    const columnHeading = columnHeadings[i];
-    return { cellValue, columnHeading };
-  });
-}
-
-export function formatCustomerData(customerData: CustomerData): FormattedCustomerData {
-  const formattedCustomerData = customerData
-    ?.filter(row => isRowValid(row, customerData))
-    .map(row => formatCellData(row, customerData))
-  ;
-
-  return formattedCustomerData;
-}
-
-export function getCustomerData(workbook: WorkBook): FormattedCustomerData {
-  const customerDataSheetRaw = Object.values(workbook.Sheets)[0];
-  const formatAsArrayOfArrays = { header: 1 };
-  const customerDataValues: CustomerData = utils.sheet_to_json(
-    customerDataSheetRaw,
-    formatAsArrayOfArrays
-  );
-  const customerData = formatCustomerData(customerDataValues);
-
-  return customerData;
-}
-
-export function getMetadata(workbook: WorkBook): Metadata {
+function getMetadata(workbook: WorkBook): Metadata {
   const { month, year } = getInvoicePeriod(workbook);
 
   // TODO: replace address placeholders
@@ -104,25 +44,38 @@ function getYearFromTitle(title: string) {
   return year;
 }
 
-export function getUpdatedInvoiceData(data: RawFileData, filename: string) {
+function formatWorkbook(data: RawFileData, filename: string) {
+  const workbook = read(data);
+  workbook.Props = workbook.Props ?? {};
+  workbook.Props.Title = filename;
+  console.log({ workbook });
+
+  return workbook;
+}
+
+function removeInvalidRows(customerData: CustomerData) {
+  const filteredData = customerData.filter(customer => {
+    const hasCustomerName = Boolean(customer['Full Name']);
+    const hasTotalOwed = Boolean(customer['Total Owed']);
+    return hasCustomerName && hasTotalOwed;
+  });
+
+  return filteredData;
+}
+
+function getCustomerData(workbook: WorkBook) {
+  const customerDataSheetRaw = Object.values(workbook.Sheets)[0];
+  const customerData: CustomerData = utils.sheet_to_json(customerDataSheetRaw);
+  const filteredData = removeInvalidRows(customerData);
+
+  return filteredData;
+}
+
+export function getUpdatedInvoiceData(data: RawFileData, filename: string): InvoiceData {
   const workbook = formatWorkbook(data, filename);
   const customerData = getCustomerData(workbook);
   const metadata = getMetadata(workbook);
   const updatedInvoiceData = { customerData, metadata };
 
   return updatedInvoiceData;
-}
-
-function formatWorkbook(data: RawFileData, filename: string) {
-  const workbook = read(data);
-  workbook.Props = workbook.Props ?? {};
-  workbook.Props.Title = filename;
-  console.log(workbook);
-
-  return workbook;
-}
-
-export function getCellValueByColumnHeading(row: FormattedCellValue[], columnHeading: CellValue) {
-  const cellData = row.find(cellData => cellData.columnHeading === columnHeading);
-  return cellData?.cellValue;
 }
