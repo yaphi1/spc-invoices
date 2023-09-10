@@ -10,6 +10,11 @@ export type Address = {
 
 export type Metadata = {
   address: Address;
+  companyName: string,
+  federalId?: string,
+  instructions?: string,
+  otherInfo?: string,
+  phone: string,
   month: string;
   year: number;
 };

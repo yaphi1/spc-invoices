@@ -8,16 +8,30 @@ import {
 
 function getMetadata(workbook: WorkBook): Metadata {
   const { month, year } = getInvoicePeriod(workbook);
+  const metadataSheetRaw = getSheetByName('System Parking Info', workbook);
+  const configureAsArrayOfArrays = { header: 1 };
+  const metadataJson: string[][] = utils.sheet_to_json(metadataSheetRaw, configureAsArrayOfArrays);
+  const cleanedData = metadataJson.slice(1).filter(row => row.length > 0);
 
-  // TODO: replace address placeholders
+  const keyedData: Record<string, string> = {};
+  cleanedData.forEach(entry => {
+    const [key, value] = entry;
+    keyedData[key] = value;
+  });
+
   const metadata = {
     address: {
-      street: 'street',
-      streetLine2: 'streetLine2',
-      city: 'city',
-      state: 'state',
-      zip: 'zip',
+      street: keyedData['Address Line 1'],
+      streetLine2: keyedData['Address Line 2'],
+      city: keyedData['City'],
+      state: keyedData['State'],
+      zip: keyedData['Zip'],
     },
+    companyName: keyedData['Company Name'],
+    federalId: keyedData['Federal ID'],
+    instructions: keyedData['Instructions'],
+    otherInfo: keyedData['Other Info (optional)'],
+    phone: keyedData['Phone'],
     month,
     year,
   };
@@ -48,7 +62,6 @@ function formatWorkbook(data: RawFileData, filename: string) {
   const workbook = read(data);
   workbook.Props = workbook.Props ?? {};
   workbook.Props.Title = filename;
-  console.log({ workbook });
 
   return workbook;
 }
@@ -63,8 +76,24 @@ function removeInvalidRows(customerData: CustomerData) {
   return filteredData;
 }
 
+function getSheetByName(sheetName: string, workbook: WorkBook) {
+  // Seeking sheet by key first and order second gives some
+  // protection against accidental changes in names or ordering
+
+  const originalOrder: Record<string, number> = {
+    'Customer data': 0,
+    'System Parking Info': 2,
+  };
+
+  const sheet =
+    workbook.Sheets[sheetName] ??
+    Object.values(workbook.Sheets)[originalOrder[sheetName]];
+
+  return sheet;
+}
+
 function getCustomerData(workbook: WorkBook) {
-  const customerDataSheetRaw = Object.values(workbook.Sheets)[0];
+  const customerDataSheetRaw = getSheetByName('Customer data', workbook);
   const customerData: CustomerData = utils.sheet_to_json(customerDataSheetRaw);
   const filteredData = removeInvalidRows(customerData);
 
