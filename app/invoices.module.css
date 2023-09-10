@@ -1,5 +1,16 @@
 .invoice {
   border: 1px dashed black;
-  margin: 40px;
+  margin-bottom: 40px;
   padding: 40px;
+  width: 8.5in;
+  font-size: 12pt;
+  font-family:'Times New Roman', Times, serif;
+  break-after: page;
+}
+
+@media print {
+  .invoice {
+    border: none;
+    margin-bottom: 0;
+  }
 }

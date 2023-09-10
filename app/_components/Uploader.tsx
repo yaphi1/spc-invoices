@@ -4,6 +4,7 @@ import { ChangeEvent, useState } from 'react';
 import { InvoiceData } from '../_utils/types';
 import { getUpdatedInvoiceData } from '../_utils/dataTools';
 import Invoices from './Invoices';
+import styles from '../uploader.module.css';
 
 export default function Uploader() {
   const [ invoiceData, setInvoiceData ] = useState<InvoiceData>();
@@ -23,12 +24,17 @@ export default function Uploader() {
 
   return (
     <div>
-      Uploader
-      <div>
-        <input
-          type="file"
-          onChange={(e) => { handleFileAsync(e); }}
-        />
+      <div className={styles.uploaderUI}>
+        Uploader
+        <div>
+          <input
+            type="file"
+            onChange={(e) => { handleFileAsync(e); }}
+          />
+        </div>
+        <button onClick={() => { print(); }}>
+          Print
+        </button>
       </div>
       <Invoices invoiceData={invoiceData} />
     </div>
