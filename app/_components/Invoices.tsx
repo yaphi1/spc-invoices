@@ -137,10 +137,10 @@ export default function Invoices({ invoiceData }: { invoiceData?: InvoiceData })
               <tbody>
                 {itemDetails
                   .filter(lineItem => lineItem.quantity)
-                  .map(lineItem => {
+                  .map((lineItem, lineItemKey) => {
                     const amount = Number(lineItem.quantity) * Number(lineItem.price);
                     return (
-                      <tr>
+                      <tr key={lineItemKey}>
                         <td>{lineItem.label}</td>
                         <td className={styles.numericalColumn}>{lineItem.quantity}</td>
                         <td className={styles.numericalColumn}>${lineItem.price}</td>
