@@ -10,11 +10,11 @@ export type Address = {
 
 export type Metadata = {
   address: Address;
-  companyName: string,
-  federalId?: string,
-  instructions?: string,
-  otherInfo?: string,
-  phone: string,
+  companyName: string;
+  federalId?: string;
+  instructions?: string;
+  otherInfo?: string;
+  phone: string;
   month: string;
   year: number;
 };
@@ -27,5 +27,5 @@ export type CustomerData = CustomerDataRow[];
 
 export type InvoiceData = {
   customerData: CustomerData;
-  metadata: Metadata
+  metadata: Metadata;
 };
