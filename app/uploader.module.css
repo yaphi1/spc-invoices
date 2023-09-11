@@ -4,8 +4,54 @@
   }
 }
 
-/*
-TODO:
-- Style uploader UI
-- Make sure customer address lines up with envelope window
-*/
+.uploaderUI {
+  padding: 0.5in 1in;
+}
+
+.uploadButton,
+.reuploadButton,
+.printButton {
+  cursor: pointer;
+  display: inline-block;
+  padding: 20px 40px;
+  font-size: 40px;
+  border-radius: 5px;
+  border: none;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.uploadButton {
+  background-color: rgb(0, 91, 124);
+  color: #fff;
+}
+
+.uploadButton:hover {
+  background-color: rgb(0, 139, 190);
+}
+
+.reuploadButton {
+  background-color: lightgray;
+}
+
+.reuploadButton:hover {
+  background-color: rgb(186, 186, 186);
+}
+
+.printButton {
+  margin-bottom: 20px;
+  background-color: lightgreen;
+}
+
+.printButton:hover {
+  background-color: greenyellow;
+}
+
+.uploadButton input,
+.reuploadButton input {
+  display: none;
+}
+
+.reuploadButton {
+  font-size: 20px;
+  padding: 10px 20px;
+}

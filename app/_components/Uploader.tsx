@@ -25,16 +25,28 @@ export default function Uploader() {
   return (
     <div>
       <div className={styles.uploaderUI}>
-        Uploader
+        {invoiceData && (
+          <button
+            className={styles.printButton}
+            onClick={() => { print(); }}
+          >
+            Click here to PRINT invoices
+          </button>
+        )}
         <div>
-          <input
-            type="file"
-            onChange={(e) => { handleFileAsync(e); }}
-          />
+          <label className={
+            invoiceData ? styles.reuploadButton : styles.uploadButton
+          }>
+            {invoiceData ?
+              'Click here to upload different invoice data' :
+              'Click here to upload invoice data'
+            }
+            <input
+              type="file"
+              onChange={(e) => { handleFileAsync(e); }}
+            />
+          </label>
         </div>
-        <button onClick={() => { print(); }}>
-          Print
-        </button>
       </div>
       <Invoices invoiceData={invoiceData} />
     </div>
